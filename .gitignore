@@ -1,0 +1,39 @@
+# Verilator generated build and simulation output
+/sim/
+
+# Sigasi generated, machine-specific output
+/.sigasi/generated/
+
+# Common Verilator output directories, if created outside sim/
+obj_dir/
+obj_*/
+
+# Waveform files, if created somewhere outside sim/
+*.fst
+*.vcd
+*.vpd
+*.wlf
+
+# Simulation and build logs
+*.log
+
+# Coverage output
+coverage.dat
+*.ucdb
+
+# C/C++ build artifacts
+*.o
+*.a
+*.so
+*.d
+*.gch
+
+# Temporary and editor files
+*~
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# VS Code local-only state
+.vscode/.ropeproject/

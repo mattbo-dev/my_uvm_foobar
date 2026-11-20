@@ -1,0 +1,10 @@
+{
+    "[systemverilog]": {
+        "editor.defaultFormatter": "sigasi.sigasi-visual-hdl",
+        "editor.formatOnSave": true
+    },
+    "editor.renderWhitespace": "all",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false
+}

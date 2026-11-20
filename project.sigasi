@@ -1,0 +1,15 @@
+{
+    "name": "my_uvm_foobar",
+    "targets": {
+        "rtl": {
+            "libraryMapping": {
+                "": "work"
+            },
+            "dependencies": [
+                {
+                    "UVM": "UVM-2020-3.2-Verilator"
+                }
+            ]
+        }
+    }
+}

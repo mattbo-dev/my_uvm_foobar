@@ -1,0 +1,115 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Verilator: Build UVM",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/build.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "normal",
+                    "SIM_THREADS": "4"
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Verilator: Run UVM",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "normal",
+                    "SIM_THREADS": "4",
+                    "UVM_TEST": "my_test",
+                    "UVM_VERBOSITY": "UVM_MEDIUM"
+                }
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Verilator: Build and Run UVM",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Verilator: Build UVM",
+                "Verilator: Run UVM"
+            ],
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Verilator: Fast Build",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/build.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "fast",
+                    "SIM_THREADS": "1"
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Verilator: Release Build",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/build.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "release",
+                    "SIM_THREADS": "4"
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Verilator: Clean All",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-rf",
+                "${workspaceFolder}/sim/obj_fast_t1",
+                "${workspaceFolder}/sim/obj_normal_t4",
+                "${workspaceFolder}/sim/obj_release_t4",
+                "${workspaceFolder}/sim/waves.fst"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
