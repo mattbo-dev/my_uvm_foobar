@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "sigasi.sigasi-visual-hdl",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-vscode-remote.remote-wsl"
+    ]
+}

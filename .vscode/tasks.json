@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Verilator: Build UVM",
+            "label": "Calculator: Build",
             "type": "shell",
             "command": "${workspaceFolder}/scripts/build.sh",
             "options": {
@@ -26,7 +26,7 @@
             }
         },
         {
-            "label": "Verilator: Run UVM",
+            "label": "Calculator: Directed",
             "type": "shell",
             "command": "${workspaceFolder}/scripts/run.sh",
             "options": {
@@ -34,7 +34,7 @@
                 "env": {
                     "BUILD_MODE": "normal",
                     "SIM_THREADS": "4",
-                    "UVM_TEST": "my_test",
+                    "UVM_TEST": "calc_directed_test",
                     "UVM_VERBOSITY": "UVM_MEDIUM"
                 }
             },
@@ -46,66 +46,120 @@
             }
         },
         {
-            "label": "Verilator: Build and Run UVM",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Verilator: Build UVM",
-                "Verilator: Run UVM"
-            ],
-            "problemMatcher": [],
-            "group": "test"
-        },
-        {
-            "label": "Verilator: Fast Build",
+            "label": "Calculator: Random Seed 42",
             "type": "shell",
-            "command": "${workspaceFolder}/scripts/build.sh",
+            "command": "${workspaceFolder}/scripts/run.sh",
             "options": {
                 "cwd": "${workspaceFolder}",
                 "env": {
-                    "BUILD_MODE": "fast",
-                    "SIM_THREADS": "1"
+                    "BUILD_MODE": "normal",
+                    "SIM_THREADS": "4",
+                    "UVM_TEST": "calc_random_test",
+                    "SEED": "42",
+                    "NUM_TRANSACTIONS": "150",
+                    "UVM_VERBOSITY": "UVM_MEDIUM"
                 }
             },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated",
-                "clear": true
-            }
+            "problemMatcher": []
         },
         {
-            "label": "Verilator: Release Build",
+            "label": "Calculator: Backpressure",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "normal",
+                    "SIM_THREADS": "4",
+                    "UVM_TEST": "calc_backpressure_test"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Calculator: Reset",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "normal",
+                    "SIM_THREADS": "4",
+                    "UVM_TEST": "calc_reset_test"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Calculator: All",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "normal",
+                    "SIM_THREADS": "4",
+                    "UVM_TEST": "calc_all_test"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Calculator: Clean Build",
             "type": "shell",
             "command": "${workspaceFolder}/scripts/build.sh",
             "options": {
                 "cwd": "${workspaceFolder}",
                 "env": {
-                    "BUILD_MODE": "release",
+                    "BUILD_MODE": "normal",
+                    "SIM_THREADS": "4",
+                    "CLEAN_BUILD": "1"
+                }
+            },
+            "problemMatcher": ["$gcc"],
+            "group": "build"
+        },
+        {
+            "label": "Calculator: Regression",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/regression.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "normal",
                     "SIM_THREADS": "4"
                 }
             },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated",
-                "clear": true
-            }
+            "problemMatcher": []
         },
         {
-            "label": "Verilator: Clean All",
+            "label": "Calculator: Coverage Report",
             "type": "shell",
-            "command": "rm",
-            "args": [
-                "-rf",
-                "${workspaceFolder}/sim/obj_fast_t1",
-                "${workspaceFolder}/sim/obj_normal_t4",
-                "${workspaceFolder}/sim/obj_release_t4",
-                "${workspaceFolder}/sim/waves.fst"
-            ],
+            "command": "${workspaceFolder}/scripts/coverage_report.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "normal",
+                    "SIM_THREADS": "4"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Calculator: Open GTKWave",
+            "type": "shell",
+            "command": "gtkwave",
+            "args": ["${workspaceFolder}/sim/waves.fst"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Calculator: Clean Generated Output",
+            "type": "shell",
+            "command": "find",
+            "args": ["${workspaceFolder}/sim", "-mindepth", "1", "-maxdepth", "1", "-exec", "rm", "-rf", "{}", "+"],
             "options": {
                 "cwd": "${workspaceFolder}"
             },

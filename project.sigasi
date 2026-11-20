@@ -10,6 +10,21 @@
                     "UVM": "UVM-2020-3.2-Verilator"
                 }
             ]
+        },
+        "tb": {
+            "libraryMapping": {
+                "": "work"
+            }
+        },
+        "sequences": {
+            "libraryMapping": {
+                "": "work"
+            }
+        },
+        "tests": {
+            "libraryMapping": {
+                "": "work"
+            }
         }
     }
 }

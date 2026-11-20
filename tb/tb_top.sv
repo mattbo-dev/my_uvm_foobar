@@ -1,74 +1,62 @@
-`timescale 1ns / 1ps
+`timescale 1ns/1ps
 
 module tb_top;
-
   import uvm_pkg::*;
-  import my_uvm_pkg::*;
+  import calc_types_pkg::*;
+  import calc_pkg::*;
 
-  logic       clk;
-  logic       rst_n;
-  logic [7:0] data_in;
-  logic [7:0] data_out;
+  logic clk = 1'b0;
+  calc_if vif(clk);
 
-  // Instantiate the sample DUT from rtl/dut.sv
-  dut u_dut (
-      .clk     (clk),
-      .rst_n   (rst_n),
-      .data_in (data_in),
-      .data_out(data_out)
+  calc_dut #(
+      .OPERAND_WIDTH(8),
+      .RESULT_WIDTH(16),
+      .FIFO_DEPTH(4)
+  ) dut_inst (
+      .clk(clk),
+      .rst_n(vif.rst_n),
+      .req_valid(vif.req_valid),
+      .opcode(vif.opcode),
+      .operand_a(vif.operand_a),
+      .operand_b(vif.operand_b),
+      .rsp_ready(vif.rsp_ready),
+      .clear_status(vif.clear_status),
+      .req_ready(vif.req_ready),
+      .rsp_valid(vif.rsp_valid),
+      .rsp_result(vif.rsp_result),
+      .status_register(vif.status_register)
   );
 
-  // 100 MHz clock: 10 ns period
-  initial begin
-    clk = 1'b0;
+  always #5ns clk = ~clk;
 
-    forever begin
-      #5ns clk = ~clk;
-    end
+  initial begin
+      vif.rst_n = 1'b0;
+      repeat (3) @(posedge clk);
+      vif.rst_n = 1'b1;
   end
 
-  // Reset and simple stimulus
   initial begin
-    rst_n   = 1'b0;
-    data_in = 8'h00;
-
-    repeat (2) @(posedge clk);
-    rst_n = 1'b1;
-
-    // Apply 0x12
-    @(negedge clk);
-    data_in = 8'h12;
-
-    @(posedge clk);
-    #1ns;
-
-    if (data_out !== 8'h12) begin
-      $error("DUT mismatch: expected 0x12, got 0x%02h", data_out);
-    end
-
-    // Apply 0x34
-    @(negedge clk);
-    data_in = 8'h34;
-
-    @(posedge clk);
-    #1ns;
-
-    if (data_out !== 8'h34) begin
-      $error("DUT mismatch: expected 0x34, got 0x%02h", data_out);
-    end else begin
-      $display("DUT smoke test passed: data_out=0x%02h", data_out);
-    end
+      uvm_config_db #(virtual calc_if)::set(null, "*", "vif", vif);
+      run_test();
   end
 
-  // Start UVM
   initial begin
-    run_test();
+      #10ms;
+      $fatal(1, "TIMEOUT: simulation exceeded 10 ms");
   end
 
-  // Waveform output used with --trace-fst
   initial begin
-    $dumpfile("waves.fst");
-    $dumpvars(0, tb_top);
+      if ($test$plusargs("WAVES")) begin
+          $dumpfile("waves.fst");
+          $dumpvars(0, tb_top);
+      end
+  end
+
+  initial begin
+      if (CALC_STATUS_BITS != 32)
+          $fatal(1, "calc_status_t must be exactly 32 bits");
+      if (CALC_OPCODE_BITS != 2)
+          $fatal(1, "calc_opcode_t must be exactly 2 bits");
   end
 
 endmodule

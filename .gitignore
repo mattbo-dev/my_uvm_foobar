@@ -1,5 +1,6 @@
 # Verilator generated build and simulation output
 /sim/
+sim/
 
 # Sigasi generated, machine-specific output
 /.sigasi/generated/

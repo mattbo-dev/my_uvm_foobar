@@ -1,25 +1,15 @@
 #!/usr/bin/env bash
 
-# Catch errors for any piped commands, unset variables, and exit on any error.
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_ROOT="${PROJECT_ROOT}/sim"
 TOP_MODULE="${TOP_MODULE:-tb_top}"
-
-# Number of threads in the generated simulation model.
 SIM_THREADS="${SIM_THREADS:-4}"
-
-# Development modes:
-#   fast    = faster compilation, no waveform tracing
-#   normal  = balanced compilation with FST tracing
-#   release = slower compilation, optimized simulation
 BUILD_MODE="${BUILD_MODE:-normal}"
-
-# If UVM_HOME is not already exported, use this default.
 UVM_HOME="${UVM_HOME:-${HOME}/tools/uvm-verilator/src}"
+CLEAN_BUILD="${CLEAN_BUILD:-0}"
 
-# Logging
 LOG_DIR="${BUILD_ROOT}/logs"
 BUILD_LOG="${LOG_DIR}/build_${BUILD_MODE}_t${SIM_THREADS}.log"
 
@@ -28,21 +18,20 @@ case "${BUILD_MODE}" in
         CXX_OPT="-O0"
         TRACE_OPTIONS=()
         ;;
-
     normal)
         CXX_OPT="-O1"
         TRACE_OPTIONS=(
             --trace-fst
+            --trace-structs
         )
         ;;
-
     release)
         CXX_OPT="-O3 -march=native"
         TRACE_OPTIONS=(
             --trace-fst
+            --trace-structs
         )
         ;;
-
     *)
         echo "ERROR: Unknown BUILD_MODE: ${BUILD_MODE}"
         echo "Valid modes: fast, normal, release"
@@ -50,8 +39,6 @@ case "${BUILD_MODE}" in
         ;;
 esac
 
-# Separate output directories prevent different thread configurations
-# and optimization modes from overwriting one another.
 BUILD_DIR="${BUILD_ROOT}/obj_${BUILD_MODE}_t${SIM_THREADS}"
 EXECUTABLE="${BUILD_DIR}/V${TOP_MODULE}"
 
@@ -69,8 +56,10 @@ if [[ ! -f "${UVM_HOME}/uvm_pkg.sv" ]]; then
 fi
 
 for source_file in \
-    "${PROJECT_ROOT}/rtl/dut.sv" \
-    "${PROJECT_ROOT}/tb/my_uvm_pkg.sv" \
+    "${PROJECT_ROOT}/rtl/calc_types_pkg.sv" \
+    "${PROJECT_ROOT}/rtl/calc_dut.sv" \
+    "${PROJECT_ROOT}/tb/calc_if.sv" \
+    "${PROJECT_ROOT}/tb/calc_pkg.sv" \
     "${PROJECT_ROOT}/tb/tb_top.sv"
 do
     if [[ ! -f "${source_file}" ]]; then
@@ -82,6 +71,11 @@ done
 
 mkdir -p "${BUILD_DIR}"
 mkdir -p "${LOG_DIR}"
+
+if [[ "${CLEAN_BUILD}" == "1" ]]; then
+    find "${BUILD_DIR}" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+    echo "Cleaned generated directory: ${BUILD_DIR}"
+fi
 
 echo "--------------------------------------------------"
 echo "Verilator:       $(verilator --version)"
@@ -99,6 +93,13 @@ verilator \
     --binary \
     --timing \
     --assert \
+    --coverage \
+    --coverage-line \
+    --coverage-branch \
+    --coverage-expr \
+    --coverage-expr-max 64 \
+    --coverage-fsm \
+    --coverage-fsm-max-arcs 128 \
     -Wall \
     -Wno-fatal \
     -j 0 \
@@ -111,9 +112,13 @@ verilator \
     "+incdir+${UVM_HOME}" \
     "+incdir+${PROJECT_ROOT}/rtl" \
     "+incdir+${PROJECT_ROOT}/tb" \
+    "+incdir+${PROJECT_ROOT}/tb/sequences" \
+    "+incdir+${PROJECT_ROOT}/tb/tests" \
     "${UVM_HOME}/uvm_pkg.sv" \
-    "${PROJECT_ROOT}/rtl/dut.sv" \
-    "${PROJECT_ROOT}/tb/my_uvm_pkg.sv" \
+    "${PROJECT_ROOT}/rtl/calc_types_pkg.sv" \
+    "${PROJECT_ROOT}/rtl/calc_dut.sv" \
+    "${PROJECT_ROOT}/tb/calc_if.sv" \
+    "${PROJECT_ROOT}/tb/calc_pkg.sv" \
     "${PROJECT_ROOT}/tb/tb_top.sv" \
     2>&1 | tee "${BUILD_LOG}"
 
