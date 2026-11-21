@@ -91,6 +91,20 @@
             "problemMatcher": []
         },
         {
+            "label": "Calculator: Passive",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BUILD_MODE": "normal",
+                    "SIM_THREADS": "4",
+                    "UVM_TEST": "calc_passive_test"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "Calculator: All",
             "type": "shell",
             "command": "${workspaceFolder}/scripts/run.sh",

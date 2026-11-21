@@ -7,6 +7,10 @@ bits, backpressure, push/pop, simultaneous push/pop, and reset. It also defines
 a Verilator-compatible covergroup for opcodes, occupancy, overflow sticky, and
 invalid sticky.
 
+The fallback counters additionally report zero/maximum/equal operands,
+ADD-overflow, SUB-underflow, MUL-overflow, and empty-to-nonempty,
+nonfull-to-full, and full-to-nonfull transitions.
+
 Because some advanced cross and operand-category constructs differ across
 Verilator distributions, explicit fallback counters preserve coverage intent.
 The report prints fallback counts at test completion.

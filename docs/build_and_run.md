@@ -14,6 +14,7 @@ UVM_TEST=calc_random_test SEED=42 NUM_TRANSACTIONS=100 ./scripts/run.sh
 UVM_TEST=calc_random_test SEED=2026 NUM_TRANSACTIONS=150 ./scripts/run.sh
 UVM_TEST=calc_backpressure_test ./scripts/run.sh
 UVM_TEST=calc_reset_test ./scripts/run.sh
+UVM_TEST=calc_passive_test ./scripts/run.sh
 UVM_TEST=calc_all_test ./scripts/run.sh
 ./scripts/regression.sh
 ./scripts/coverage_report.sh

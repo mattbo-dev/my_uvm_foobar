@@ -2,6 +2,10 @@
     "name": "my_uvm_foobar",
     "targets": {
         "rtl": {
+            "directory": "rtl",
+            "languageMapping": {
+                "systemverilogVersion": "systemverilog-2012"
+            },
             "libraryMapping": {
                 "": "work"
             },
@@ -12,16 +16,76 @@
             ]
         },
         "tb": {
+            "directory": "tb",
+            "dependencies": [
+                "rtl",
+                {
+                    "UVM": "UVM-2020-3.2-Verilator"
+                }
+            ],
+            "languageMapping": {
+                "systemverilogVersion": "systemverilog-2012"
+            },
+            "verilogPreprocessor": {
+                "includeDirectories": [
+                    "tb",
+                    "tb/sequences",
+                    "tb/tests",
+                    "rtl"
+                ],
+                "define": {
+                    "UVM_NO_DPI": null
+                },
+                "multiFileCompilationUnitScope": true
+            },
             "libraryMapping": {
                 "": "work"
             }
         },
         "sequences": {
+            "directory": "tb/sequences",
+            "dependencies": [
+                "tb"
+            ],
+            "languageMapping": {
+                "systemverilogVersion": "systemverilog-2012"
+            },
+            "verilogPreprocessor": {
+                "includeDirectories": [
+                    "tb",
+                    "tb/sequences",
+                    "tb/tests",
+                    "rtl"
+                ],
+                "define": {
+                    "UVM_NO_DPI": null
+                },
+                "multiFileCompilationUnitScope": true
+            },
             "libraryMapping": {
                 "": "work"
             }
         },
         "tests": {
+            "directory": "tb/tests",
+            "dependencies": [
+                "tb"
+            ],
+            "languageMapping": {
+                "systemverilogVersion": "systemverilog-2012"
+            },
+            "verilogPreprocessor": {
+                "includeDirectories": [
+                    "tb",
+                    "tb/sequences",
+                    "tb/tests",
+                    "rtl"
+                ],
+                "define": {
+                    "UVM_NO_DPI": null
+                },
+                "multiFileCompilationUnitScope": true
+            },
             "libraryMapping": {
                 "": "work"
             }

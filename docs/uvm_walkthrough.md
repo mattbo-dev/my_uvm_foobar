@@ -5,7 +5,7 @@ clear-status intent, and a transaction number. Its explicit copy/compare/string
 methods keep transactions readable.
 
 Sequences are factory-created and send transactions through
-`calc_base_sequence.send_request()`. The sequencer passes transactions to
+`calc_base_sequence.send_calc_request()`. The sequencer passes transactions to
 `calc_driver` through `seq_item_port`.
 
 The driver retrieves a virtual `calc_if` from `uvm_config_db` under `"vif"`,

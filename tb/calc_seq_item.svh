@@ -5,6 +5,7 @@ class calc_seq_item extends uvm_sequence_item;
   rand int unsigned idle_cycles;
   rand int unsigned rsp_ready_delay;
   rand bit clear_status;
+  rand bit clear_only;
   int unsigned transaction_number;
 
   constraint modest_delays {
@@ -29,6 +30,7 @@ class calc_seq_item extends uvm_sequence_item;
       idle_cycles = rhs_t.idle_cycles;
       rsp_ready_delay = rhs_t.rsp_ready_delay;
       clear_status = rhs_t.clear_status;
+      clear_only = rhs_t.clear_only;
       transaction_number = rhs_t.transaction_number;
   endfunction
 
@@ -42,12 +44,13 @@ class calc_seq_item extends uvm_sequence_item;
              idle_cycles == rhs_t.idle_cycles &&
              rsp_ready_delay == rhs_t.rsp_ready_delay &&
              clear_status == rhs_t.clear_status &&
+             clear_only == rhs_t.clear_only &&
              transaction_number == rhs_t.transaction_number;
   endfunction
 
   function string convert2string();
-      return $sformatf("tx=%0d op=%s a=0x%02h b=0x%02h idle=%0d ready_delay=%0d clear=%0b",
+      return $sformatf("tx=%0d op=%s a=0x%02h b=0x%02h idle=%0d ready_delay=%0d clear=%0b clear_only=%0b",
                        transaction_number, opcode.name(), operand_a, operand_b,
-                       idle_cycles, rsp_ready_delay, clear_status);
+                       idle_cycles, rsp_ready_delay, clear_status, clear_only);
   endfunction
 endclass

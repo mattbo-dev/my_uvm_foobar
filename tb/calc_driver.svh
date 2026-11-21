@@ -39,6 +39,15 @@ class calc_driver extends uvm_driver #(calc_seq_item);
           end
           vif.drv_cb.rsp_ready <= 1'b1;
 
+          if (req.clear_only) begin
+              vif.drv_cb.req_valid <= 1'b0;
+              vif.drv_cb.clear_status <= 1'b1;
+              @(vif.drv_cb);
+              vif.drv_cb.clear_status <= 1'b0;
+              seq_item_port.item_done();
+              continue;
+          end
+
           vif.drv_cb.opcode <= req.opcode;
           vif.drv_cb.operand_a <= req.operand_a;
           vif.drv_cb.operand_b <= req.operand_b;

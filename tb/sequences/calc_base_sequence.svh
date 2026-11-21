@@ -13,7 +13,7 @@ class calc_base_sequence extends uvm_sequence #(calc_seq_item);
           `uvm_fatal("NOVIF", "calc_base_sequence virtual interface was not configured")
   endtask
 
-  task send_request(calc_opcode_t op,
+  task send_calc_request(calc_opcode_t op,
                    logic [7:0] a,
                    logic [7:0] b,
                    bit clear_status = 0,
@@ -26,6 +26,18 @@ class calc_base_sequence extends uvm_sequence #(calc_seq_item);
       req.operand_b = b;
       req.clear_status = clear_status;
       req.idle_cycles = idle;
+      req.rsp_ready_delay = ready_delay;
+      req.transaction_number = next_transaction_number++;
+      start_item(req);
+      finish_item(req);
+  endtask
+
+  task send_clear_only(int unsigned ready_delay = 1);
+      calc_seq_item req;
+      req = calc_seq_item::type_id::create("clear_only_req");
+      req.clear_only = 1'b1;
+      req.clear_status = 1'b1;
+      req.idle_cycles = 0;
       req.rsp_ready_delay = ready_delay;
       req.transaction_number = next_transaction_number++;
       start_item(req);

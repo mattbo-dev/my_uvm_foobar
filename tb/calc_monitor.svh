@@ -4,8 +4,6 @@ class calc_monitor extends uvm_monitor;
   uvm_analysis_port #(calc_observation) response_port;
   uvm_analysis_port #(calc_observation) status_port;
   uvm_analysis_port #(calc_observation) event_port;
-  int unsigned cycle_number;
-
   `uvm_component_utils(calc_monitor)
 
   function new(string name, uvm_component parent);
@@ -40,6 +38,9 @@ class calc_monitor extends uvm_monitor;
               logic [7:0] accepted_a;
               logic [7:0] accepted_b;
               logic [15:0] consumed_result;
+              logic [2:0] invalid_count_before;
+              logic [15:0] invalid_last_before;
+              bit invalid_check;
 
               reset_active = !vif.rst_n;
               accepted = vif.req_valid && vif.req_ready;
@@ -49,6 +50,9 @@ class calc_monitor extends uvm_monitor;
               clear_now = vif.clear_status;
               push_now = accepted && (vif.opcode != CALC_INVALID);
               pop_now = consumed;
+              invalid_check = accepted && (vif.opcode == CALC_INVALID);
+              invalid_count_before = vif.status_register.result_count;
+              invalid_last_before = vif.status_register.last_result;
               accepted_opcode = vif.opcode;
               accepted_a = vif.operand_a;
               accepted_b = vif.operand_b;
@@ -60,7 +64,6 @@ class calc_monitor extends uvm_monitor;
                       #1step;
                       obs = new("reset_observation");
                       obs.kind = CALC_RESET_EVENT;
-                      obs.reset_event = 1'b1;
                       obs.status = vif.status_register;
                       event_port.write(obs);
                   end
@@ -68,6 +71,14 @@ class calc_monitor extends uvm_monitor;
                   continue;
               end
               last_reset = 1'b0;
+
+              if (clear_now) begin
+                  calc_observation clr;
+                  clr = new("clear_status_event");
+                  clr.kind = CALC_CLEAR_EVENT;
+                  clr.clear_status = 1'b1;
+                  event_port.write(clr);
+              end
 
               if (accepted) begin
                   calc_observation req_obs;
@@ -84,7 +95,6 @@ class calc_monitor extends uvm_monitor;
                   calc_observation bp;
                   bp = new("request_backpressure");
                   bp.kind = CALC_REQ_BACKPRESSURE;
-                  bp.backpressure = 1'b1;
                   event_port.write(bp);
               end
 
@@ -100,16 +110,7 @@ class calc_monitor extends uvm_monitor;
                   calc_observation bp;
                   bp = new("response_backpressure");
                   bp.kind = CALC_RESP_BACKPRESSURE;
-                  bp.backpressure = 1'b1;
                   event_port.write(bp);
-              end
-
-              if (clear_now) begin
-                  calc_observation clr;
-                  clr = new("clear_status_event");
-                  clr.kind = CALC_CLEAR_EVENT;
-                  clr.clear_status = 1'b1;
-                  event_port.write(clr);
               end
 
               if (push_now || pop_now) begin
@@ -128,6 +129,12 @@ class calc_monitor extends uvm_monitor;
                   status_obs.kind = CALC_STATUS_SNAPSHOT;
                   status_obs.status = vif.status_register;
                   status_port.write(status_obs);
+                  if (invalid_check &&
+                      (vif.status_register.result_count !=
+                       (pop_now ? invalid_count_before - 1'b1 :
+                                   invalid_count_before) ||
+                       vif.status_register.last_result != invalid_last_before))
+                      $error("ASSERT: invalid opcode changed FIFO occupancy or last_result");
               end
           end
       end

@@ -27,6 +27,7 @@ run_test() {
 run_test calc_directed_test 1 100
 run_test calc_backpressure_test 42 100
 run_test calc_reset_test 42 100
+run_test calc_passive_test 42 100
 run_test calc_random_test 1 100
 run_test calc_random_test 42 150
 run_test calc_random_test 2026 200

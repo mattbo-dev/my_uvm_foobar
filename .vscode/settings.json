@@ -6,5 +6,13 @@
     "editor.renderWhitespace": "all",
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "sigasi.libraries": [
+        {
+            "library": "UVM",
+            "alias": "UVM-2020-3.2-Verilator",
+            "path": "~/tools/uvm-verilator/src",
+            "layout": "UVM"
+        }
+    ]
 }

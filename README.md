@@ -10,7 +10,7 @@ repeatable scripts.
 - Synchronous-active-low reset and four-entry result FIFO
 - Typed packed opcode and 32-bit status register
 - UVM agent, monitor, sequencer, driver, scoreboard, coverage, and environment
-- Directed, random, backpressure, invalid, reset, and combined tests
+- Directed, random, backpressure, invalid, reset, passive-agent, and combined tests
 - Verilator binary build, FST tracing, structural coverage, and WSL VS Code tasks
 
 ## DUT and UVM overview

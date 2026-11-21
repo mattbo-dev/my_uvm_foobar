@@ -25,5 +25,6 @@ package calc_pkg;
   `include "tests/calc_random_test.svh"
   `include "tests/calc_backpressure_test.svh"
   `include "tests/calc_reset_test.svh"
+  `include "tests/calc_passive_test.svh"
   `include "tests/calc_all_test.svh"
 endpackage

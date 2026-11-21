@@ -30,9 +30,7 @@ module tb_top;
   always #5ns clk = ~clk;
 
   initial begin
-      vif.rst_n = 1'b0;
-      repeat (3) @(posedge clk);
-      vif.rst_n = 1'b1;
+      vif.drive_reset(3);
   end
 
   initial begin

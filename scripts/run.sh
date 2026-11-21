@@ -52,7 +52,8 @@ if [[ ${SIM_STATUS} -ne 0 ]]; then
     exit "${SIM_STATUS}"
 fi
 
-if grep -Eq "^UVM_(ERROR|FATAL) .*\\[" "${LOG_FILE}" ||
+if grep -Eq "^UVM_(ERROR|FATAL)( .*\\[| : *[1-9])" "${LOG_FILE}" ||
+   grep -Eq "TIMEOUT:|UVM_ERROR : *[1-9]|UVM_FATAL : *[1-9]" "${LOG_FILE}" ||
    grep -Eq "SB_UN(DRAINED|EXPECTED)|Scoreboard mismatch|ASSERT:" "${LOG_FILE}"; then
     echo "ERROR: UVM error, assertion, or scoreboard mismatch found"
     exit 1
@@ -60,6 +61,11 @@ fi
 
 if ! grep -q "CALC_SCOREBOARD_COMPLETE" "${LOG_FILE}"; then
     echo "ERROR: Missing CALC_SCOREBOARD_COMPLETE marker"
+    exit 1
+fi
+
+if ! grep -q "CALC_TEST_COMPLETE" "${LOG_FILE}"; then
+    echo "ERROR: Missing CALC_TEST_COMPLETE marker"
     exit 1
 fi
 

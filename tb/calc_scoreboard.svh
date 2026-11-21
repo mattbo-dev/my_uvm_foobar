@@ -38,7 +38,9 @@ class calc_scoreboard extends uvm_scoreboard;
           CALC_PUSH_POP_EVENT,
           CALC_REQ_BACKPRESSURE,
           CALC_RESP_BACKPRESSURE: write_event(obs);
-          default: begin end
+          default:
+              // Unknown opcodes are handled as invalid requests.
+              begin end
       endcase
   endfunction
 
@@ -60,11 +62,6 @@ class calc_scoreboard extends uvm_scoreboard;
       bit overflow;
       overflow = 1'b0;
       result = '0;
-      if (obs.clear_status) begin
-          expected_overflow = 1'b0;
-          expected_invalid = 1'b0;
-      end
-
       if (obs.opcode == CALC_INVALID) begin
           accepted_invalid++;
           expected_invalid = 1'b1;
@@ -90,8 +87,9 @@ class calc_scoreboard extends uvm_scoreboard;
               if (wide_product > 255)
                   overflow = 1'b1;
           end
-          default: begin
-          end
+          default:
+              // Unknown opcode values do not enqueue a result.
+              begin end
       endcase
 
       if (overflow)
@@ -197,6 +195,8 @@ class calc_scoreboard extends uvm_scoreboard;
           end
       end else if (obs.kind == CALC_CLEAR_EVENT) begin
           clear_events++;
+          expected_overflow = 1'b0;
+          expected_invalid = 1'b0;
       end else if (obs.kind == CALC_PUSH_POP_EVENT) begin
           if (obs.push)
               expected_count = expected_count + 1'b1;
